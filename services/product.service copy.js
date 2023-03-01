@@ -1,14 +1,18 @@
+//conecion con el archivo postgres.pool.js
+
+
 const { faker } = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 
-const sequelize = require('../libs/sequelize');
+const pool = require('../libs/postgres.pool');
 
 class ProductsService {
 
   constructor(){
     this.products = [];
     this.generate();
-
+    this.pool =pool;
+    this.pool.on('error',(err)=>{console.log(err)});
   }
 
   generate() {
@@ -35,9 +39,8 @@ class ProductsService {
 
   async find() {
     const query ='select * from tasks';
-    
-    const [data,metadata] = await sequelize.query(query);
-    return data;
+    const rta= await this.pool.query(query);
+    return rta.rows;
   }
 
   async findOne(id) {
